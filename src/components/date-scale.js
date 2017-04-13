@@ -7,12 +7,13 @@ export default class DateScale {
     this.node = this.generate()
   }
 
+  // Generates date-scale
   generate() {
     const section = document.createElement('section')
 
     this.weekDays.forEach(day => {
       let dayParagraph = document.createElement('p')
-      dayParagraph.innerHTML = day
+      dayParagraph.innerHTML = day.substring(0,1)
       section.appendChild(dayParagraph)
     })
 

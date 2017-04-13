@@ -1,19 +1,21 @@
-// Import moment.js library
+// Import external library
 import moment from 'moment'
 
-// Import date scale component
+// Import components
 import DateScale from './date-scale'
 import Controllers from './controllers'
 
 export default class Calendar {
   constructor() {
     this.today = moment()
+    this.limit = moment().add(3,'months')
     this.date = moment()
     this.controllers
     this.days
     this.node = this.generate()
   }
 
+  // Generates full calendar
   generate() {
     const section = document.createElement('section')
 
@@ -32,44 +34,67 @@ export default class Calendar {
     return section
   }
 
+  // Generates days
   generateDays() {
     this.days = document.createElement('section')
     this.days.classList.add('days')
 
-    for (let notDay = 0; notDay < moment().month(this.date.month()).date(1).day(); notDay++) {
-        let container = document.createElement('section')
-        container.classList.add('blank')
-        this.days.appendChild(container)
+    // Adding blank days if month doesn't start with Monday
+    for (let blank = 0; blank < moment().month(this.date.month()).date(1).day(); blank++) {
+
+      let container = document.createElement('section')
+      container.classList.add('blank')
+      this.days.appendChild(container)
     }
 
+    // Adding days
     for (let day = 1; day <= moment().month(this.date.month()).daysInMonth(); day++) {
-        let container = document.createElement('section')
-        let paragraph = document.createElement('p')
-        container.classList.add('day')
 
-        if ( day == this.date.format("DD")) {
-          paragraph.classList.add('active')
-        }
+      let container = document.createElement('section')
+      let paragraph = document.createElement('p')
+      container.classList.add('day')
 
-        paragraph.innerHTML = day
-        container.appendChild(paragraph)
-        this.days.appendChild(container)
+      // If today add class today
+      if ( moment(this.date).date(day).format("DD-MM") == moment().format("DD-MM")) {
+        paragraph.classList.add('today')
+      // If day chosen by user add class active
+      } else if (moment(this.date).format("D") == day) {
+        paragraph.classList.add('active')
+      // If a day is a past day add class past
+      } else if (moment(this.date).date(day) < moment()) {
+        paragraph.classList.add('past')
+      }
+
+      paragraph.innerHTML = day
+      container.appendChild(paragraph)
+
+      // Checking if there are appointments for certain day in appointments map
+      if(this.controllers.appointments.map.get(moment(this.date).date(day).format("DD-MM-YYYY")) != null && this.controllers.appointments.map.get(moment(this.date).date(day).format("DD-MM-YYYY")).length > 0)
+      {
+        let appointmentIcon = document.createElement('section')
+        appointmentIcon.classList.add('appointment')
+        container.appendChild(appointmentIcon)
+      }
+
+      // Adding event listener when a day is selected by user
+      container.addEventListener('click', () => {
+          this.changeDay(container.childNodes[0].innerHTML)
+      })
+
+      this.days.appendChild(container)
     }
 
-    this.days.childNodes.forEach( node => {node.addEventListener('click', () => {
-      for (let i=0; i< this.days.getElementsByClassName('day').length; i++) {
-
-            this.days.getElementsByClassName('day')[i].childNodes[0].classList.remove('active')
-        }
-      this.changeDay(node.childNodes[0].innerHTML)
-      node.childNodes[0].classList.add('active')
-    })})
+    // Refresh event listeners
+    this.updateEventListeners()
   }
 
+  // Changes active day to one selected by user
   changeDay(dayNo) {
+
     this.date = moment().month(this.date.month()).date(dayNo)
     this.controllers.update(this.date)
 
+    // Adding active class
     for (let i=0; i< this.days.getElementsByClassName('day').length; i++) {
       if(this.days.getElementsByClassName('day')[i].childNodes[0].innerHTML == dayNo) {
         this.days.getElementsByClassName('day')[i].childNodes[0].classList.add('active')
@@ -78,21 +103,52 @@ export default class Calendar {
           this.days.getElementsByClassName('day')[i].childNodes[0].classList.remove('active')
       }
     }
+
+    this.updateEventListeners()
   }
 
+  // Changes month shown in calendar
   changeMonth(increase) {
-    let value = increase ? 1 : -1
 
+    const value = increase ? 1 : -1
+
+    // Set date to 1st of month to avoid date confusion (different months lengths)
     this.date = this.date.date(1)
-    this.date = this.date.add(value,'month')
+    const next = moment(this.date).add(value,'month')
+    const now = moment().date(1)
+
+    // Checking if next month is in between limit boundaries
+    if (next.isBetween(now, this.limit, 'days')){
+      this.date.add(value,'month')
+    // If next month is lower than now, changing date to now
+    } else if (next < now){
+     this.date = moment()
+    }
+
+    // If adding new appointment is opened, close it
+    if (! this.controllers.newAppointment.node.classList.contains('hidden') ){
+     this.controllers.newAppointment.node.classList.add('hidden')
+     this.controllers.newAppointmentButton.node.classList.remove('active')
+   }
+
+   this.update()
+  }
+
+  // Updates calendar by re-generating days
+  update() {
     this.node.getElementsByClassName('days')[0].remove()
     this.generateDays()
     this.node.appendChild(this.days)
     this.controllers.update(this.date)
   }
 
-  addAppointment() {
-    this.node.getElementsByClassName('day')[0].innerHTML = 'added'
+  // Adds event listener to new/recreated appointment nodes
+  updateEventListeners() {
+    for(let i =0; i <this.controllers.appointments.node.getElementsByClassName('close').length; i++) {
+      this.controllers.appointments.node.getElementsByClassName('close')[i].addEventListener('click', () => {
+        this.update()
+      })
+    }
   }
 
 }

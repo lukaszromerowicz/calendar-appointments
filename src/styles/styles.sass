@@ -1,3 +1,6 @@
+$break-small: 26em
+$break-large: 1200px
+
 html
   min-height: 100%
 
@@ -8,18 +11,50 @@ body
   height: 100%
   margin: 0
   padding: 0
+  width: 100%
 
 .calendar
   width: 80%
   height: auto
-  margin: 0 auto
   color: black
+  margin: 0 auto
 
   .controllers
-    height: 100px
+    position: relative
+    width: 100%
+
+    .appointments
+      position: relative
+      left: 5%
+      margin-right: 10%
+      height: auto
+      margin-bottom: 100px
+      top: 50px
+      padding: 0
+      list-style-type: none
+
+      li
+        padding: 10px
+        background-color: lightgray
+        margin-bottom: 5px
+
+      p
+        display: inline-block
+
+      .close
+        float: right
+        display: none
+
+      li:hover > .close
+        display: inline-block
+
 
     h1
       display: inline-block
+      font-weight: lighter
+      font-size: 20px
+      @media screen and (max-width: $break-small)
+        font-size: 16px
 
     .day-header
       margin-left: 5%
@@ -29,10 +64,58 @@ body
       margin-right: 5%
       float: right
 
+    .button
+      cursor: pointer
+      position: relative
+      top: 20px
+      display: block
+      color: black
+      font-weight: lighter
+      -webkit-user-select: none
+      -moz-user-select: none
+      -ms-user-select: none
+      user-select: none
+
+      &.left
+        top: 10px
+        font-size: 36px
+        float: right
+        margin-right: 5%
+        @media screen and (max-width: $break-small)
+          top: 0px
+
+      &.right
+        right: 5%
+        top: 10px
+        font-size: 36px
+        float: right
+        @media screen and (max-width: $break-small)
+          top: 0px
+
+      &.add-appointment
+        width: 300px
+        top: -40px
+        left: 5%
+
+        &.active:after
+          padding-left: 5px
+          content: ' X '
+
+        &.active:hover
+          color:black
+
+        &:hover
+          color: blue
+
+
   .date-scale
     width: 100%
-    color: black
-    margin-bottom: 5%
+    font-weight: lighter
+    color: gray
+    margin-top: 15%
+    text-overflow: ellipsis
+    white-space: nowrap
+    overflow: hidden
 
     p
       width: 14%
@@ -47,18 +130,60 @@ body
       display: inline-block
       text-align: center
       height: 100px
+      padding-top: 20px
       font-size: 21px
+      border-bottom: 1px solid #e8e8e8
+
+      .appointment
+        position: static
+        width: 10px
+        height: 10px
+        left: 0
+        right: 0
+        margin-left: auto
+        margin-right: auto
+        margin-top: 10px
+        border-radius: 20px
+        background-color: black
 
       p
+        font-size: 32px
+        font-weight: lighter
+        cursor: pointer
         margin: 0 auto
         width: 50px
         height: 30px
         padding-top: 5px
+        @media screen and (max-width: $break-small)
+          font-size: 24px
+
+      p.today
+        color: green
+        font-weight: bold
 
       p.active
-        border-radius: 20px
-        background-color: lightgray
+        font-weight: bold
+        color: blue
+
+      p.past
+        color: lightgray
 
     .blank
       width: 14%
       display: inline-block
+
+.new-appointment
+  width: 400px
+  height: 200px
+  position: relative
+  left: 5%
+
+  input
+    width: 80%
+    height: 30px
+    margin-bottom: 5px
+    display: block
+
+
+.hidden
+  display: none
