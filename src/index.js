@@ -47,9 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       calendar.controllers.newAppointment.alert.style.display = 'none'
       calendar.controllers.appointments.addAppointment(
-        calendar.controllers.date.format("DD-MM-YYYY"),
-        calendar.controllers.newAppointment.timeInput.value,
-        calendar.controllers.newAppointment.titleInput.value)
+      calendar.controllers.date.format("DD-MM-YYYY"),
+      calendar.controllers.newAppointment.timeInput.value,
+      calendar.controllers.newAppointment.titleInput.value)
 
       calendar.controllers.newAppointmentButton.node.classList.remove('active')
 
