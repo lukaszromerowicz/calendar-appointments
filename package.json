@@ -1,7 +1,7 @@
 {
-  "name": "isosec-appointments",
+  "name": "calendar-appointments",
   "version": "1.0.0",
-  "description": "Small appointment system.",
+  "description": "Small appointment system",
   "main": "index.js",
   "scripts": {
     "build": "webpack --progress --profile --colors",
